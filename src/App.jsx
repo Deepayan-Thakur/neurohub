@@ -24,7 +24,11 @@ import {
   Calculator,
   Target,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Microscope,
+  TrendingUp,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 // --- Data & Content ---
@@ -63,9 +67,19 @@ const CONCEPTS = [
     title: 'Supervised Learning',
     icon: <Database className="w-6 h-6" />,
     difficulty: 'Beginner',
-    summary: 'The machine learning task of learning a function that maps an input to an output based on example input-output pairs.',
+    summary: 'The task of learning a function that maps an input to an output based on example input-output pairs.',
     content: {
-      definition: "Supervised learning is a paradigm in machine learning where input objects (typically a vector of predictors) and a desired output value (also known as the supervisory signal) are used to train a model. The algorithm analyzes the training data and produces an inferred function, which can be used for mapping new examples.",
+      definition: "Supervised learning is the machine learning task of learning a function that maps an input to an output based on example input-output pairs. It infers a function from labeled training data consisting of a set of training examples. In supervised learning, each example is a pair consisting of an input object (typically a vector) and a desired output value (also called the supervisory signal).",
+      deepDive: [
+        {
+          title: "The Bias-Variance Tradeoff",
+          text: "One of the most critical concepts in supervised learning. 'Bias' is the error introduced by approximating a real-world problem with a simplified model (e.g., using a straight line for curved data). 'Variance' is the error introduced by sensitivity to small fluctuations in the training set (e.g., connecting every dot perfectly). High bias causes underfitting; high variance causes overfitting. The goal is to find the sweet spot."
+        },
+        {
+          title: "Loss Functions Types",
+          text: "Different problems require different loss functions. For Regression, we often use Mean Squared Error (MSE) or Mean Absolute Error (MAE). For Classification, we use Cross-Entropy Loss (Log Loss) to penalize wrong probability predictions heavily."
+        }
+      ],
       math: {
         title: "The Mathematical Formulation",
         desc: "We try to find a function f that minimizes the error between predictions and actual targets.",
@@ -78,8 +92,8 @@ const CONCEPTS = [
       keyTerms: [
         { term: 'Label (y)', def: 'The answer or result portion of an observation.' },
         { term: 'Feature (x)', def: 'An individual measurable property or characteristic.' },
-        { term: 'Classification', def: 'Predicting a discrete class label (e.g., Spam vs Not Spam).' },
-        { term: 'Regression', def: 'Predicting a continuous quantity (e.g., House Price).' }
+        { term: 'Overfitting', def: 'When a model learns the training data too well, including noise, and fails to generalize.' },
+        { term: 'Regularization', def: 'Techniques (L1, L2) used to reduce overfitting by penalizing large weights.' }
       ],
       codeTitle: 'Simple Linear Regression with Scikit-Learn',
       code: `from sklearn.linear_model import LinearRegression
@@ -102,14 +116,14 @@ prediction = model.predict([[6]])
 print(f"Prediction for 6 hours: {prediction[0]}") 
 # Output: 12.0`,
       quiz: {
-        question: "Which of the following is an example of a Regression problem?",
-        options: ["Detecting if an email is spam", "Predicting the price of a house", "Identifying a cat in a photo", "Grouping customers by purchasing behavior"],
-        answer: 1 // Index of correct answer
+        question: "High Variance in a model typically leads to:",
+        options: ["Underfitting (too simple)", "Overfitting (too complex)", "Perfect generalization", "Faster training times"],
+        answer: 1 
       }
     },
     faqs: [
       { q: "What is the difference between supervised and unsupervised learning?", a: "The main difference is labeled data. Supervised learning uses labeled data (input-output pairs), while unsupervised learning works with unlabeled data to find hidden patterns." },
-      { q: "Is deep learning supervised?", a: "Deep learning models can be supervised, unsupervised, or semi-supervised. However, many popular applications like image classification are supervised." }
+      { q: "How do I know if my model is overfitting?", a: "If your training accuracy is very high (e.g., 99%) but your validation/test accuracy is low (e.g., 70%), your model is likely overfitting." }
     ]
   },
   {
@@ -120,6 +134,16 @@ print(f"Prediction for 6 hours: {prediction[0]}")
     summary: 'Computing systems inspired by the biological neural networks that constitute animal brains.',
     content: {
       definition: "An Artificial Neural Network (ANN) is based on a collection of connected units or nodes called artificial neurons. Each connection, like the synapses in a biological brain, can transmit a signal to other neurons. The signal is processed by a non-linear activation function.",
+      deepDive: [
+        {
+          title: "The Vanishing Gradient Problem",
+          text: "In deep networks with many layers, gradients used to update weights can become incredibly small during backpropagation, effectively preventing the earlier layers from learning. This was a major bottleneck until solutions like ReLU activation functions and Residual Connections (ResNets) were introduced."
+        },
+        {
+          title: "Universal Approximation Theorem",
+          text: "This theorem states that a feed-forward network with a single hidden layer containing a finite number of neurons can approximate continuous functions on compact subsets of R^n, under mild assumptions on the activation function. Essentially, neural nets can learn ANY function given enough neurons."
+        }
+      ],
       math: {
         title: "The Perceptron Rule",
         desc: "A single neuron calculates a weighted sum of inputs plus a bias, then applies an activation function.",
@@ -174,6 +198,16 @@ model.summary()`,
     summary: 'Specialized neural networks for processing grid-like data, such as images.',
     content: {
       definition: "CNNs use a mathematical operation called 'convolution' in place of general matrix multiplication in at least one of their layers. They are designed to automatically and adaptively learn spatial hierarchies of features from low-level patterns (edges) to high-level patterns (faces, objects).",
+      deepDive: [
+        {
+          title: "Transfer Learning",
+          text: "Training a CNN from scratch requires massive data and compute. Transfer Learning allows us to take a pre-trained model (like ResNet50 trained on ImageNet), freeze the feature extraction layers (which know how to detect edges/textures), and only retrain the final classification layers for our specific task. This is how most modern CV apps are built."
+        },
+        {
+          title: "Data Augmentation",
+          text: "To prevent overfitting when you have few images, we artificially expand the dataset by applying random transformations: rotations, flips, zooms, and color shifts. This forces the model to learn invariant features rather than memorizing specific pixels."
+        }
+      ],
       math: {
         title: "The Convolution Operation",
         desc: "A filter (kernel) slides over the input image performing element-wise multiplication and summation.",
@@ -224,6 +258,16 @@ class SimpleCNN(nn.Module):
     summary: 'The architecture behind modern LLMs (like GPT), utilizing Self-Attention mechanisms.',
     content: {
       definition: "The Transformer model, introduced in 'Attention Is All You Need', dispenses with recurrence and convolutions entirely. Instead, it relies on a mechanism called Self-Attention to weigh the significance of different words in a sentence regardless of their distance from each other.",
+      deepDive: [
+        {
+          title: "Multi-Head Attention",
+          text: "Instead of performing a single attention function, Transformers project queries, keys, and values h times with different, learned linear projections. This allows the model to jointly attend to information from different representation subspaces at different positions. One head might focus on subject-verb relationship, another on adjectives."
+        },
+        {
+          title: "Tokenization & Embeddings",
+          text: "Raw text isn't fed into the model. It is first broken into 'Tokens' (sub-words). These tokens are then converted into 'Embeddings'—high-dimensional vectors where similar words are mathematically close to each other. Positional Encodings are added to these embeddings to retain order information."
+        }
+      ],
       math: {
         title: "Scaled Dot-Product Attention",
         desc: "The core formula of the Transformer.",
@@ -270,6 +314,16 @@ print(result[0]['generated_text'])
     summary: 'Learning patterns from unlabeled data, such as clustering or dimensionality reduction.',
     content: {
       definition: "Unsupervised learning is a type of machine learning that looks for previously undetected patterns in a data set with no pre-existing labels. It allows for modeling of probability densities of given inputs.",
+      deepDive: [
+        {
+          title: "Dimensionality Reduction (PCA vs t-SNE)",
+          text: "When data has hundreds of features, visualization is impossible. PCA (Principal Component Analysis) is a linear technique to project data to lower dimensions while preserving variance. t-SNE is a non-linear technique excellent for visualizing clusters in 2D/3D space, but computationally heavier."
+        },
+        {
+          title: "Anomaly Detection",
+          text: "A key application of unsupervised learning. By learning what 'normal' data looks like (probability density estimation), the model can flag data points that fall outside the normal distribution—crucial for fraud detection and system health monitoring."
+        }
+      ],
       math: {
         title: "K-Means Objective",
         desc: "Minimize the within-cluster sum of squares (variance).",
@@ -326,9 +380,9 @@ const BLOG_POSTS = [
 // --- Sub-Components ---
 
 const CodeBlock = ({ title, code }) => (
-  <div className="bg-slate-900 rounded-lg overflow-hidden my-6 shadow-xl border border-slate-700">
-    <div className="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
-      <span className="text-slate-300 text-sm font-mono">{title}</span>
+  <div className="bg-slate-950 rounded-lg overflow-hidden my-6 shadow-2xl border border-slate-800">
+    <div className="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-800">
+      <span className="text-slate-400 text-sm font-mono">{title}</span>
       <div className="flex space-x-2">
         <div className="w-3 h-3 rounded-full bg-red-500"></div>
         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -336,7 +390,7 @@ const CodeBlock = ({ title, code }) => (
       </div>
     </div>
     <div className="p-4 overflow-x-auto">
-      <pre className="font-mono text-sm text-green-400">
+      <pre className="font-mono text-sm text-emerald-400">
         <code>{code}</code>
       </pre>
     </div>
@@ -390,18 +444,18 @@ const InteractiveLinearRegression = () => {
   const line = getLineCoords();
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <div className="bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-slate-700/50">
       <div className="mb-4 flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><LineChart className="w-5 h-5 text-blue-600"/> Interactive Linear Regression</h3>
-          <p className="text-slate-500 text-sm">Click graph to add data. Model learns best fit line instantly (Least Squares).</p>
+          <h3 className="text-lg font-bold text-white flex items-center gap-2"><LineChart className="w-5 h-5 text-blue-500"/> Linear Regression Lab</h3>
+          <p className="text-slate-400 text-sm">Click graph to add data. Model learns best fit line instantly (Least Squares).</p>
         </div>
-        <button onClick={() => setPoints([])} className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200 transition">Reset</button>
+        <button onClick={() => setPoints([])} className="px-3 py-1 text-xs bg-red-900/30 border border-red-500/30 text-red-400 rounded hover:bg-red-900/50 transition">Reset</button>
       </div>
-      <div className="relative border border-slate-200 bg-slate-50 rounded cursor-crosshair overflow-hidden" style={{ height: '400px' }}>
+      <div className="relative border border-slate-700 bg-slate-950 rounded-lg cursor-crosshair overflow-hidden" style={{ height: '400px' }}>
         <svg ref={canvasRef} onClick={handleCanvasClick} className="w-full h-full" viewBox="0 0 600 400" preserveAspectRatio="none">
           <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth="1"/>
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
           </pattern>
           <rect width="100%" height="100%" fill="url(#grid)" />
           {points.length >= 2 && <line x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} stroke="#3b82f6" strokeWidth="4" />}
@@ -439,52 +493,52 @@ const GradientDescentVisualizer = () => {
   const mapY = (y) => 400 - (y * (400 / 100));
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <div className="bg-slate-900/50 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-slate-700/50">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><Target className="w-5 h-5 text-purple-600"/> Gradient Descent Visualizer</h3>
-        <p className="text-slate-500 text-sm">Visualize how a model finds the minimum loss (y=0) on the curve J(θ) = θ².</p>
+        <h3 className="text-lg font-bold text-white flex items-center gap-2"><Target className="w-5 h-5 text-purple-500"/> Gradient Descent Optimizer</h3>
+        <p className="text-slate-400 text-sm">Visualize how a model finds the minimum loss (y=0) on the curve J(θ) = θ².</p>
       </div>
       
-      <div className="flex gap-4 mb-4 items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+      <div className="flex gap-4 mb-4 items-center bg-slate-800/50 p-3 rounded-lg border border-slate-700">
         <div className="flex-1">
-           <label className="text-xs font-bold text-slate-500 uppercase">Learning Rate: {learningRate}</label>
+           <label className="text-xs font-bold text-slate-400 uppercase">Learning Rate: {learningRate}</label>
            <input 
              type="range" min="0.01" max="1.1" step="0.05" 
              value={learningRate} onChange={(e) => setLearningRate(parseFloat(e.target.value))}
-             className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+             className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
            />
         </div>
-        <button onClick={nextStep} className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition font-semibold text-sm">Step</button>
-        <button onClick={reset} className="bg-white border border-slate-300 text-slate-600 px-4 py-2 rounded hover:bg-slate-50 transition text-sm">Reset</button>
+        <button onClick={nextStep} className="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700 transition font-semibold text-sm border border-purple-500/50">Step</button>
+        <button onClick={reset} className="bg-transparent border border-slate-600 text-slate-300 px-4 py-2 rounded hover:bg-slate-800 transition text-sm">Reset</button>
       </div>
 
-      <div className="relative border border-slate-200 bg-white rounded overflow-hidden" style={{ height: '400px' }}>
+      <div className="relative border border-slate-700 bg-slate-950 rounded-lg overflow-hidden" style={{ height: '400px' }}>
         <svg className="w-full h-full" viewBox="0 0 600 400">
            {/* Curve y = x^2 */}
            <path d={Array.from({length: 21}, (_, i) => i - 10).map((x, i) => 
              `${i===0 ? 'M' : 'L'} ${mapX(x)} ${mapY(x*x)}`
-           ).join(' ')} stroke="#cbd5e1" strokeWidth="3" fill="none" />
+           ).join(' ')} stroke="#475569" strokeWidth="3" fill="none" />
            
            {/* Ball */}
            <circle 
              cx={mapX(history[history.length - 1].x)} 
              cy={mapY(history[history.length - 1].y)} 
-             r="8" fill="#9333ea" 
-             className="transition-all duration-300 ease-out"
+             r="8" fill="#a855f7" 
+             className="transition-all duration-300 ease-out shadow-[0_0_10px_#a855f7]"
            />
            
            {/* History Path */}
            {history.map((pt, i) => (
-             <circle key={i} cx={mapX(pt.x)} cy={mapY(pt.y)} r="3" fill="#d8b4fe" />
+             <circle key={i} cx={mapX(pt.x)} cy={mapY(pt.y)} r="3" fill="#e9d5ff" opacity="0.5" />
            ))}
         </svg>
-        <div className="absolute top-4 right-4 bg-white/90 p-3 rounded shadow backdrop-blur-sm border border-purple-100 text-sm">
-           <div className="font-mono text-purple-700">Loss: {history[history.length-1].y.toFixed(4)}</div>
-           <div className="font-mono text-slate-500">Steps: {step}</div>
+        <div className="absolute top-4 right-4 bg-slate-900/90 p-3 rounded shadow backdrop-blur-sm border border-purple-900/50 text-sm">
+           <div className="font-mono text-purple-400">Loss: {history[history.length-1].y.toFixed(4)}</div>
+           <div className="font-mono text-slate-400">Steps: {step}</div>
         </div>
       </div>
-      <p className="mt-4 text-xs text-slate-500 bg-yellow-50 p-2 rounded border border-yellow-100">
-        <span className="font-bold">Try this:</span> Set Learning Rate high (0.9) to see it overshoot (oscillate), or low (0.05) to see it crawl.
+      <p className="mt-4 text-xs text-slate-400 bg-yellow-900/20 p-2 rounded border border-yellow-700/30">
+        <span className="font-bold text-yellow-500">Experiment:</span> Set Learning Rate high (0.9) to see it overshoot (oscillate), or low (0.05) to see it crawl.
       </p>
     </div>
   )
@@ -493,48 +547,61 @@ const GradientDescentVisualizer = () => {
 // --- Main Pages ---
 
 const Home = ({ onChangeView }) => (
-  <div className="animate-in fade-in duration-500">
-    <section className="text-center py-20 px-4 bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-4xl mx-auto">
-        <div className="inline-block p-3 bg-blue-100 rounded-full mb-6">
-          <Brain className="w-12 h-12 text-blue-600" />
+  <div className="animate-in fade-in duration-700">
+    <section className="relative text-center py-32 px-4 overflow-hidden">
+      {/* Abstract Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[100px]"></div>
+      </div>
+
+      <div className="max-w-5xl mx-auto relative z-10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full mb-8 backdrop-blur-sm shadow-xl">
+          <Brain className="w-5 h-5 text-purple-400" />
+          <span className="text-slate-300 text-sm font-medium">Next-Gen Learning Platform</span>
         </div>
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-          Master the Future of <span className="text-blue-600">Intelligence</span>
+        
+        <h1 className="text-6xl md:text-7xl font-extrabold text-white mb-8 tracking-tight leading-tight">
+          Unlock the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Neural Future</span>
         </h1>
-        <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-          The complete interactive encyclopedia for Machine Learning. From simple Regression to Transformers.
+        
+        <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+          Explore the depths of Artificial Intelligence. From basic Regression to advanced Transformers. Interactive, rigorous, and completely free.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
+        
+        <div className="flex flex-col sm:flex-row justify-center gap-5">
           <button 
             onClick={() => onChangeView('roadmap')}
-            className="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 flex items-center justify-center"
+            className="group relative px-8 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition shadow-[0_0_20px_rgba(37,99,235,0.3)] overflow-hidden"
           >
-            <Map className="mr-2 w-4 h-4" /> Start Roadmap
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+            <span className="flex items-center justify-center">
+               <Map className="mr-2 w-5 h-5" /> Start Roadmap
+            </span>
           </button>
           <button 
             onClick={() => onChangeView('concepts')}
-            className="px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-lg font-semibold hover:bg-slate-50 transition flex items-center justify-center"
+            className="px-8 py-4 bg-slate-900/50 text-slate-200 border border-slate-700 rounded-xl font-bold hover:bg-slate-800 hover:border-slate-600 transition flex items-center justify-center backdrop-blur-sm"
           >
-            Browse Concepts <ChevronRight className="ml-2 w-4 h-4" />
+            Browse Library <ChevronRight className="ml-2 w-5 h-5" />
           </button>
         </div>
       </div>
     </section>
 
-    <section className="py-16 px-6 max-w-6xl mx-auto">
+    <section className="py-20 px-6 max-w-7xl mx-auto">
       <div className="grid md:grid-cols-3 gap-8">
         {[
-          { title: 'Interactive Learning', icon: <Zap className="w-6 h-6 text-yellow-500"/>, desc: 'Don\'t just read formulas. Tweak parameters and watch algorithms learn in real-time.' },
-          { title: 'Full Stack Code', icon: <Terminal className="w-6 h-6 text-green-500"/>, desc: 'Production-ready code snippets in PyTorch, TensorFlow, and Scikit-Learn.' },
-          { title: 'Beginner to Expert', icon: <GraduationCap className="w-6 h-6 text-purple-500"/>, desc: 'Layered content. Start with simple definitions, toggle "Math Mode" for deep theory.' },
+          { title: 'Interactive Labs', icon: <Zap className="w-8 h-8 text-yellow-400"/>, desc: 'Don\'t just read formulas. Tweak hyperparameters and watch algorithms converge in real-time.' },
+          { title: 'Production Code', icon: <Terminal className="w-8 h-8 text-emerald-400"/>, desc: 'Copy-paste ready snippets in PyTorch, TensorFlow, and Scikit-Learn for your next project.' },
+          { title: 'Deep Dives', icon: <Microscope className="w-8 h-8 text-purple-400"/>, desc: 'Go beyond the basics. Explore bias-variance tradeoffs, vanishing gradients, and attention heads.' },
         ].map((feature, idx) => (
-          <div key={idx} className="p-6 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition">
-            <div className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-4">
+          <div key={idx} className="p-8 bg-slate-900/40 border border-slate-800 rounded-2xl hover:border-slate-600 hover:bg-slate-800/60 transition group">
+            <div className="w-14 h-14 bg-slate-800 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-slate-700">
               {feature.icon}
             </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">{feature.title}</h3>
-            <p className="text-slate-600">{feature.desc}</p>
+            <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
+            <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
           </div>
         ))}
       </div>
@@ -545,22 +612,22 @@ const Home = ({ onChangeView }) => (
 const Roadmap = ({ onStart }) => (
   <div className="max-w-4xl mx-auto px-6 py-12 animate-in fade-in">
     <div className="text-center mb-16">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Your Path to Mastery</h2>
-      <p className="text-slate-600 max-w-xl mx-auto">Machine Learning is vast. Follow this curated path to build a solid foundation before tackling advanced architectures.</p>
+      <h2 className="text-4xl font-bold text-white mb-4">Your Path to Mastery</h2>
+      <p className="text-slate-400 max-w-xl mx-auto">Machine Learning is vast. Follow this curated path to build a solid foundation before tackling advanced architectures.</p>
     </div>
 
-    <div className="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+    <div className="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-blue-900 before:to-transparent">
       {ROADMAP.map((item, index) => (
-        <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-500 group-hover:bg-blue-600 group-hover:text-white transition shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+        <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-slate-800 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition shadow-[0_0_15px_rgba(37,99,235,0.5)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
             {index + 1}
           </div>
-          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition">
-            <h3 className="font-bold text-slate-800 text-lg mb-1">{item.phase}</h3>
-            <p className="text-sm text-slate-500 mb-4">{item.desc}</p>
+          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-900/80 p-6 rounded-2xl border border-slate-800 shadow-lg hover:shadow-blue-900/20 hover:border-blue-800 transition backdrop-blur-sm">
+            <h3 className="font-bold text-white text-xl mb-1">{item.phase}</h3>
+            <p className="text-sm text-slate-400 mb-4">{item.desc}</p>
             <div className="flex flex-wrap gap-2">
               {item.items.map((tag, i) => (
-                <span key={i} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200">{tag}</span>
+                <span key={i} className="text-xs bg-slate-800 text-blue-300 px-3 py-1 rounded-full border border-slate-700">{tag}</span>
               ))}
             </div>
           </div>
@@ -568,7 +635,7 @@ const Roadmap = ({ onStart }) => (
       ))}
     </div>
     <div className="mt-16 text-center">
-       <button onClick={onStart} className="px-8 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition shadow-lg">Start Learning Now</button>
+       <button onClick={onStart} className="px-10 py-4 bg-white text-slate-900 rounded-full font-bold hover:bg-slate-200 transition shadow-[0_0_20px_rgba(255,255,255,0.2)]">Start Learning Now</button>
     </div>
   </div>
 );
@@ -576,36 +643,36 @@ const Roadmap = ({ onStart }) => (
 const ConceptsList = ({ onSelectConcept }) => (
   <div className="animate-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto px-6 py-12">
     <div className="mb-12">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Core Concepts</h2>
-      <p className="text-lg text-slate-600 max-w-2xl">From basic regression to state-of-the-art Transformers. Filter by difficulty or explore sequentially.</p>
+      <h2 className="text-4xl font-bold text-white mb-4">Core Concepts</h2>
+      <p className="text-lg text-slate-400 max-w-2xl">From basic regression to state-of-the-art Transformers. Filter by difficulty or explore sequentially.</p>
     </div>
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {CONCEPTS.map(concept => (
         <div 
           key={concept.id}
           onClick={() => onSelectConcept(concept)}
-          className="group bg-white rounded-xl border border-slate-200 p-6 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-900/5 transition cursor-pointer flex flex-col h-full"
+          className="group bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-800 p-6 hover:border-blue-500/50 hover:bg-slate-800/80 transition cursor-pointer flex flex-col h-full shadow-lg"
         >
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start mb-6">
             <div className={`p-3 rounded-xl ${
-              concept.difficulty === 'Beginner' ? 'bg-green-100 text-green-600' : 
-              concept.difficulty === 'Intermediate' ? 'bg-blue-100 text-blue-600' :
-              concept.difficulty === 'Advanced' ? 'bg-purple-100 text-purple-600' :
-              'bg-orange-100 text-orange-600'
+              concept.difficulty === 'Beginner' ? 'bg-green-900/30 text-green-400 border border-green-500/30' : 
+              concept.difficulty === 'Intermediate' ? 'bg-blue-900/30 text-blue-400 border border-blue-500/30' :
+              concept.difficulty === 'Advanced' ? 'bg-purple-900/30 text-purple-400 border border-purple-500/30' :
+              'bg-orange-900/30 text-orange-400 border border-orange-500/30'
             }`}>
               {concept.icon}
             </div>
             <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-              concept.difficulty === 'Beginner' ? 'bg-green-50 text-green-600 border border-green-100' : 
-              concept.difficulty === 'Intermediate' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-              concept.difficulty === 'Advanced' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
-              'bg-orange-50 text-orange-600 border border-orange-100'
+              concept.difficulty === 'Beginner' ? 'text-green-400 bg-green-900/20' : 
+              concept.difficulty === 'Intermediate' ? 'text-blue-400 bg-blue-900/20' :
+              concept.difficulty === 'Advanced' ? 'text-purple-400 bg-purple-900/20' :
+              'text-orange-400 bg-orange-900/20'
             }`}>{concept.difficulty}</span>
           </div>
-          <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition">{concept.title}</h3>
-          <p className="text-slate-600 text-sm flex-grow mb-6 leading-relaxed">{concept.summary}</p>
-          <div className="flex items-center text-blue-600 text-sm font-bold border-t border-slate-100 pt-4">
-            Start Module <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition" />
+          <h3 className="text-2xl font-bold text-slate-100 mb-3 group-hover:text-blue-400 transition">{concept.title}</h3>
+          <p className="text-slate-400 text-sm flex-grow mb-6 leading-relaxed">{concept.summary}</p>
+          <div className="flex items-center text-blue-400 text-sm font-bold border-t border-slate-800 pt-4">
+            Explore Module <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition" />
           </div>
         </div>
       ))}
@@ -631,31 +698,31 @@ const ConceptDetail = ({ concept, onBack }) => {
     <div className="animate-in slide-in-from-right-8 duration-500 max-w-5xl mx-auto px-4 md:px-6 py-8">
       <button 
         onClick={onBack}
-        className="mb-6 flex items-center text-slate-500 hover:text-blue-600 transition text-sm font-medium"
+        className="mb-6 flex items-center text-slate-400 hover:text-white transition text-sm font-medium"
       >
         <ChevronRight className="w-4 h-4 rotate-180 mr-1" /> Back to Library
       </button>
       
-      <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10 border-b border-slate-200 pb-10">
-        <div className="p-5 bg-blue-100 text-blue-600 rounded-2xl shadow-inner">
-          {React.cloneElement(concept.icon, { className: "w-10 h-10" })}
+      <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10 border-b border-slate-800 pb-10">
+        <div className="p-5 bg-gradient-to-br from-slate-800 to-slate-900 text-blue-400 rounded-2xl shadow-lg border border-slate-700">
+          {React.cloneElement(concept.icon, { className: "w-12 h-12" })}
         </div>
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-2">{concept.title}</h1>
-          <p className="text-slate-600 text-lg">{concept.summary}</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3">{concept.title}</h1>
+          <p className="text-slate-400 text-lg max-w-2xl">{concept.summary}</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto gap-2 mb-8 border-b border-slate-200">
-        {['overview', 'math', 'code', 'quiz'].map(tab => (
+      <div className="flex overflow-x-auto gap-2 mb-8 border-b border-slate-800 no-scrollbar">
+        {['overview', 'deep dive', 'math', 'code', 'quiz'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-3 font-medium text-sm capitalize whitespace-nowrap border-b-2 transition-colors ${
+            className={`px-6 py-3 font-medium text-sm capitalize whitespace-nowrap border-b-2 transition-all ${
               activeTab === tab 
-              ? 'border-blue-600 text-blue-600 bg-blue-50/50' 
-              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+              ? 'border-blue-500 text-blue-400 bg-blue-500/10' 
+              : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800'
             }`}
           >
             {tab}
@@ -667,33 +734,33 @@ const ConceptDetail = ({ concept, onBack }) => {
         {activeTab === 'overview' && (
           <div className="animate-in fade-in space-y-8">
             <section>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Definition</h3>
-              <p className="text-lg text-slate-700 leading-relaxed bg-slate-50 p-6 rounded-xl border border-slate-100">
+              <h3 className="text-2xl font-bold text-white mb-4">Definition</h3>
+              <p className="text-lg text-slate-300 leading-relaxed bg-slate-900/50 p-6 rounded-xl border border-slate-800 shadow-sm">
                 {concept.content.definition}
               </p>
             </section>
             
             <section>
-               <h3 className="text-xl font-bold text-slate-800 mb-4">Key Terminology</h3>
+               <h3 className="text-xl font-bold text-white mb-4">Key Terminology</h3>
                <div className="grid md:grid-cols-2 gap-4">
                  {concept.content.keyTerms.map((term, i) => (
-                   <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 hover:border-blue-200 transition shadow-sm">
-                     <span className="block font-bold text-blue-600 mb-1">{term.term}</span>
-                     <span className="text-slate-600 text-sm leading-relaxed">{term.def}</span>
+                   <div key={i} className="bg-slate-900 p-5 rounded-xl border border-slate-800 hover:border-slate-600 transition shadow-sm">
+                     <span className="block font-bold text-blue-400 mb-1">{term.term}</span>
+                     <span className="text-slate-400 text-sm leading-relaxed">{term.def}</span>
                    </div>
                  ))}
                </div>
             </section>
 
              <section>
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Common Questions</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Common Questions</h3>
               <div className="space-y-4">
                 {concept.faqs.map((faq, i) => (
-                  <div key={i} className="bg-white p-4 rounded-lg border border-slate-200">
-                    <h4 className="font-bold text-slate-800 mb-1 flex items-start gap-2">
-                      <MessageSquare className="w-4 h-4 text-blue-500 mt-1 shrink-0" /> {faq.q}
+                  <div key={i} className="bg-slate-900/30 p-4 rounded-lg border border-slate-800">
+                    <h4 className="font-bold text-slate-200 mb-2 flex items-start gap-2">
+                      <MessageSquare className="w-4 h-4 text-purple-400 mt-1 shrink-0" /> {faq.q}
                     </h4>
-                    <p className="text-slate-600 text-sm ml-6">{faq.a}</p>
+                    <p className="text-slate-400 text-sm ml-6">{faq.a}</p>
                   </div>
                 ))}
               </div>
@@ -701,24 +768,39 @@ const ConceptDetail = ({ concept, onBack }) => {
           </div>
         )}
 
+        {activeTab === 'deep dive' && (
+           <div className="animate-in fade-in space-y-6">
+             {concept.content.deepDive && concept.content.deepDive.map((item, i) => (
+               <div key={i} className="bg-slate-900/80 p-8 rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                    <Microscope className="w-24 h-24 text-blue-500"/>
+                  </div>
+                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-4">{item.title}</h3>
+                  <p className="text-slate-300 text-lg leading-relaxed relative z-10">{item.text}</p>
+               </div>
+             ))}
+             {!concept.content.deepDive && <div className="text-slate-500 italic">No deep dive content available for this topic yet.</div>}
+           </div>
+        )}
+
         {activeTab === 'math' && (
            <div className="animate-in fade-in">
-             <div className="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+             <div className="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-2xl relative overflow-hidden border border-slate-800">
                 <Calculator className="absolute top-4 right-4 text-slate-800 w-32 h-32 rotate-12" />
                 <h3 className="text-2xl font-bold text-white mb-2 relative z-10">{concept.content.math.title}</h3>
                 <p className="text-slate-400 mb-8 relative z-10">{concept.content.math.desc}</p>
                 
                 <div className="space-y-6 relative z-10">
                   {concept.content.math.formulas.map((f, i) => (
-                    <div key={i} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 backdrop-blur-sm">
+                    <div key={i} className="bg-slate-950/50 p-4 rounded-lg border border-slate-700 backdrop-blur-sm">
                        <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">{f.label}</span>
                        <div className="font-mono text-xl text-white mt-2">{f.eq}</div>
                     </div>
                   ))}
                 </div>
              </div>
-             <div className="mt-6 p-4 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg flex gap-3">
-                <AlertCircle className="w-5 h-5 shrink-0" />
+             <div className="mt-6 p-4 bg-amber-900/20 text-amber-200 border border-amber-500/30 rounded-lg flex gap-3">
+                <AlertCircle className="w-5 h-5 shrink-0 text-amber-500" />
                 <p className="text-sm">These mathematical foundations are critical for understanding how the algorithm actually optimizes parameters during training.</p>
              </div>
            </div>
@@ -726,15 +808,15 @@ const ConceptDetail = ({ concept, onBack }) => {
 
         {activeTab === 'code' && (
           <div className="animate-in fade-in">
-            <p className="text-slate-600 mb-2">Implementation using industry standard libraries.</p>
+            <p className="text-slate-400 mb-2">Implementation using industry standard libraries.</p>
             <CodeBlock title={concept.content.codeTitle} code={concept.content.code} />
           </div>
         )}
 
         {activeTab === 'quiz' && (
           <div className="animate-in fade-in max-w-2xl mx-auto">
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-lg text-center">
-               <h3 className="text-xl font-bold text-slate-800 mb-6">{concept.content.quiz.question}</h3>
+            <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl text-center">
+               <h3 className="text-xl font-bold text-white mb-6">{concept.content.quiz.question}</h3>
                
                <div className="space-y-3 mb-8">
                  {concept.content.quiz.options.map((opt, i) => (
@@ -742,18 +824,18 @@ const ConceptDetail = ({ concept, onBack }) => {
                      key={i}
                      disabled={quizSubmitted}
                      onClick={() => setSelectedOption(i)}
-                     className={`w-full p-4 rounded-xl text-left border-2 transition relative ${
+                     className={`w-full p-4 rounded-xl text-left border transition relative ${
                         quizSubmitted 
                           ? i === concept.content.quiz.answer 
-                            ? 'border-green-500 bg-green-50 text-green-700 font-bold' 
-                            : i === selectedOption ? 'border-red-500 bg-red-50 text-red-700' : 'border-slate-100 text-slate-400'
+                            ? 'border-green-500/50 bg-green-900/20 text-green-400 font-bold' 
+                            : i === selectedOption ? 'border-red-500/50 bg-red-900/20 text-red-400' : 'border-slate-800 text-slate-500'
                           : selectedOption === i 
-                            ? 'border-blue-600 bg-blue-50 text-blue-700' 
-                            : 'border-slate-100 hover:border-blue-200 hover:bg-slate-50'
+                            ? 'border-blue-500 bg-blue-900/20 text-blue-400' 
+                            : 'border-slate-800 bg-slate-800/50 text-slate-300 hover:border-blue-500/50 hover:bg-slate-800'
                      }`}
                    >
                      {opt}
-                     {quizSubmitted && i === concept.content.quiz.answer && <CheckCircle className="absolute right-4 top-4 text-green-600" />}
+                     {quizSubmitted && i === concept.content.quiz.answer && <CheckCircle className="absolute right-4 top-4 text-green-500" />}
                    </button>
                  ))}
                </div>
@@ -762,16 +844,16 @@ const ConceptDetail = ({ concept, onBack }) => {
                  <button 
                    onClick={handleQuizSubmit}
                    disabled={selectedOption === null}
-                   className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                   className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg shadow-blue-900/20"
                  >
                    Submit Answer
                  </button>
                ) : (
-                  <div>
-                    <p className={`mb-4 font-bold ${selectedOption === concept.content.quiz.answer ? 'text-green-600' : 'text-red-600'}`}>
+                  <div className="animate-in zoom-in">
+                    <p className={`mb-4 font-bold text-lg ${selectedOption === concept.content.quiz.answer ? 'text-green-400' : 'text-red-400'}`}>
                       {selectedOption === concept.content.quiz.answer ? "Correct! Great job." : "Not quite. Review the definition tab and try again."}
                     </p>
-                    <button onClick={resetQuiz} className="text-slate-500 hover:text-slate-800 underline">Try Again</button>
+                    <button onClick={resetQuiz} className="text-slate-400 hover:text-white underline">Try Again</button>
                   </div>
                )}
             </div>
@@ -783,10 +865,10 @@ const ConceptDetail = ({ concept, onBack }) => {
 };
 
 const Tools = () => (
-  <div className="max-w-6xl mx-auto px-6 py-12 animate-in fade-in">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Interactive Lab</h2>
-      <p className="text-slate-600">Experiment with algorithms directly in your browser.</p>
+  <div className="max-w-7xl mx-auto px-6 py-12 animate-in fade-in">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold text-white mb-4">Interactive Lab</h2>
+      <p className="text-slate-400">Experiment with algorithms directly in your browser. Visualize the math.</p>
     </div>
     
     <div className="grid lg:grid-cols-2 gap-8">
@@ -794,37 +876,57 @@ const Tools = () => (
       <GradientDescentVisualizer />
     </div>
 
-    <div className="mt-12 text-center">
-       <div className="inline-block bg-slate-100 rounded-full px-4 py-1 text-slate-500 text-sm">More tools (Neural Net Builder, Confusion Matrix) coming in v2.1</div>
+    <div className="mt-16 grid md:grid-cols-3 gap-6 opacity-60">
+        <div className="border border-slate-800 bg-slate-900/30 p-6 rounded-xl flex items-center justify-center text-center">
+            <div>
+                <Layers className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <h4 className="text-slate-500 font-bold">Neural Net Builder</h4>
+                <span className="text-xs text-slate-600 uppercase tracking-widest">Coming Soon</span>
+            </div>
+        </div>
+        <div className="border border-slate-800 bg-slate-900/30 p-6 rounded-xl flex items-center justify-center text-center">
+             <div>
+                <Target className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <h4 className="text-slate-500 font-bold">Confusion Matrix</h4>
+                <span className="text-xs text-slate-600 uppercase tracking-widest">Coming Soon</span>
+            </div>
+        </div>
+        <div className="border border-slate-800 bg-slate-900/30 p-6 rounded-xl flex items-center justify-center text-center">
+             <div>
+                <Zap className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <h4 className="text-slate-500 font-bold">Attention Visualizer</h4>
+                <span className="text-xs text-slate-600 uppercase tracking-widest">Coming Soon</span>
+            </div>
+        </div>
     </div>
   </div>
 );
 
 const Resources = () => (
   <div className="max-w-5xl mx-auto px-6 py-12 animate-in fade-in">
-    <div className="mb-12 border-b border-slate-200 pb-8">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Curated Resources</h2>
-      <p className="text-slate-600">Hand-picked materials to accelerate your learning journey.</p>
+    <div className="mb-12 border-b border-slate-800 pb-8">
+      <h2 className="text-4xl font-bold text-white mb-4">Curated Resources</h2>
+      <p className="text-slate-400">Hand-picked materials to accelerate your learning journey.</p>
     </div>
     
     <div className="grid gap-4">
       {RESOURCES.map((res, i) => (
-        <div key={i} className="bg-white p-6 rounded-xl border border-slate-200 hover:border-blue-300 transition flex items-start justify-between group">
+        <div key={i} className="bg-slate-900/50 p-6 rounded-xl border border-slate-800 hover:border-blue-500/40 hover:bg-slate-800 transition flex items-start justify-between group">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className={`text-xs font-bold px-2 py-1 rounded uppercase tracking-wide
-                ${res.type === 'Book' ? 'bg-purple-100 text-purple-700' : 
-                  res.type === 'Course' ? 'bg-orange-100 text-orange-700' :
-                  'bg-blue-100 text-blue-700'}`}>
+                ${res.type === 'Book' ? 'bg-purple-900/30 text-purple-400' : 
+                  res.type === 'Course' ? 'bg-orange-900/30 text-orange-400' :
+                  'bg-blue-900/30 text-blue-400'}`}>
                 {res.type}
               </span>
-              <span className="text-slate-400 text-sm">•</span>
+              <span className="text-slate-600 text-sm">•</span>
               <span className="text-slate-500 text-sm">{res.author}</span>
             </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition">{res.title}</h3>
-            <p className="text-slate-600">{res.desc}</p>
+            <h3 className="text-xl font-bold text-slate-200 mb-2 group-hover:text-blue-400 transition">{res.title}</h3>
+            <p className="text-slate-400">{res.desc}</p>
           </div>
-          <ExternalLink className="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors mt-2" />
+          <ExternalLink className="w-5 h-5 text-slate-600 group-hover:text-blue-400 transition-colors mt-2" />
         </div>
       ))}
     </div>
@@ -834,26 +936,26 @@ const Resources = () => (
 const Blog = () => (
   <div className="max-w-4xl mx-auto px-6 py-12 animate-in fade-in">
     <div className="mb-12">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Latest Insights</h2>
-      <p className="text-slate-600">Articles on trends, ethics, and advanced tutorials.</p>
+      <h2 className="text-4xl font-bold text-white mb-4">Latest Insights</h2>
+      <p className="text-slate-400">Articles on trends, ethics, and advanced tutorials.</p>
     </div>
 
     <div className="grid gap-8">
       {BLOG_POSTS.map(post => (
-        <article key={post.id} className="flex flex-col md:flex-row gap-6 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer group">
-          <div className="w-full md:w-48 h-32 bg-slate-50 rounded-xl flex items-center justify-center flex-shrink-0 border border-slate-100">
-             <Code className="w-8 h-8 text-slate-300 group-hover:text-blue-400 transition" />
+        <article key={post.id} className="flex flex-col md:flex-row gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800 shadow-sm hover:shadow-blue-900/10 hover:border-slate-700 transition cursor-pointer group">
+          <div className="w-full md:w-48 h-32 bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0 border border-slate-700">
+             <Code className="w-8 h-8 text-slate-600 group-hover:text-blue-400 transition" />
           </div>
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-2 text-sm">
-              <span className="font-semibold text-blue-600">{post.category}</span>
-              <span className="text-slate-300">•</span>
+              <span className="font-semibold text-blue-400">{post.category}</span>
+              <span className="text-slate-600">•</span>
               <span className="text-slate-500">{post.date}</span>
-              <span className="text-slate-300">•</span>
+              <span className="text-slate-600">•</span>
               <span className="text-slate-500">{post.readTime}</span>
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition">{post.title}</h3>
-            <p className="text-slate-600 leading-relaxed line-clamp-2">{post.excerpt}</p>
+            <h3 className="text-2xl font-bold text-slate-100 mb-2 group-hover:text-blue-400 transition">{post.title}</h3>
+            <p className="text-slate-400 leading-relaxed line-clamp-2">{post.excerpt}</p>
           </div>
         </article>
       ))}
@@ -871,46 +973,55 @@ const Contact = () => {
   return (
     <div className="max-w-2xl mx-auto px-6 py-12 animate-in fade-in">
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold text-slate-900 mb-4">Get in Touch</h2>
-        <p className="text-slate-600">Have a suggestion for a new topic? Found a bug? Let us know.</p>
+        <h2 className="text-3xl font-bold text-white mb-4">Get in Touch</h2>
+        <p className="text-slate-400">Have a suggestion for a new topic? Found a bug? Let us know.</p>
       </div>
 
       {submitted ? (
-        <div className="bg-green-50 border border-green-200 text-green-700 p-8 rounded-xl text-center">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-green-900/20 border border-green-500/30 text-green-400 p-8 rounded-xl text-center">
+          <div className="w-12 h-12 bg-green-900/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
             <MessageSquare className="w-6 h-6" />
           </div>
           <h3 className="text-xl font-bold mb-2">Message Sent!</h3>
           <p>Thanks for reaching out. We'll get back to you shortly.</p>
-          <button onClick={() => setSubmitted(false)} className="mt-6 text-sm underline hover:text-green-800">Send another</button>
+          <button onClick={() => setSubmitted(false)} className="mt-6 text-sm underline hover:text-green-300">Send another</button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+        <form onSubmit={handleSubmit} className="bg-slate-900/50 p-8 rounded-2xl border border-slate-800 shadow-lg">
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Name</label>
-              <input required type="text" className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Jane Doe" />
+              <label className="block text-sm font-semibold text-slate-400 mb-2">Name</label>
+              <input required type="text" className="w-full px-4 py-2 bg-slate-950 rounded-lg border border-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Jane Doe" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-              <input required type="email" className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="jane@example.com" />
+              <label className="block text-sm font-semibold text-slate-400 mb-2">Email</label>
+              <input required type="email" className="w-full px-4 py-2 bg-slate-950 rounded-lg border border-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="jane@example.com" />
             </div>
           </div>
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Subject</label>
-            <select className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+            <label className="block text-sm font-semibold text-slate-400 mb-2">Subject</label>
+            <select className="w-full px-4 py-2 bg-slate-950 rounded-lg border border-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
               <option>General Query</option>
               <option>Content Suggestion</option>
               <option>Report a Bug</option>
             </select>
           </div>
           <div className="mb-8">
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Message</label>
-            <textarea required rows="4" className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="How can we help?"></textarea>
+            <label className="block text-sm font-semibold text-slate-400 mb-2">Message</label>
+            <textarea required rows="4" className="w-full px-4 py-2 bg-slate-950 rounded-lg border border-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="How can we help?"></textarea>
           </div>
-          <button type="submit" className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-600/20">
+          <button type="submit" className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-500 transition shadow-lg shadow-blue-600/20">
             Send Message
           </button>
+          
+          <div className="mt-8 pt-8 border-t border-slate-800 text-center">
+             <p className="text-slate-500 text-sm mb-4">Or connect directly via:</p>
+             <div className="flex justify-center gap-6">
+                <a href="https://github.com/Deepayan-Thakur" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white transition flex items-center gap-2">
+                   <Github className="w-5 h-5"/> <span className="text-sm">Deepayan-Thakur</span>
+                </a>
+             </div>
+          </div>
         </form>
       )}
     </div>
@@ -947,18 +1058,18 @@ const App = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 flex flex-col selection:bg-blue-500/30">
       {/* Navigation */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div 
             onClick={() => navigateTo('home')} 
             className="flex items-center gap-2 cursor-pointer group"
           >
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg group-hover:rotate-3 transition duration-300">
+            <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition duration-300">
               <Brain className="w-6 h-6" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">Neuro<span className="text-blue-600">Hub</span> 2.0</span>
+            <span className="text-xl font-bold tracking-tight text-white">Neuro<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Hub</span> 3.0</span>
           </div>
 
           {/* Desktop Nav */}
@@ -969,8 +1080,8 @@ const App = () => {
                 onClick={() => navigateTo(item.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                   view === item.id || (item.id === 'concepts' && selectedConcept)
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-slate-800 text-white' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
                 }`}
               >
                 {item.label}
@@ -980,7 +1091,7 @@ const App = () => {
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden p-2 text-slate-600"
+            className="md:hidden p-2 text-slate-400 hover:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X /> : <Menu />}
@@ -989,12 +1100,12 @@ const App = () => {
 
         {/* Mobile Nav */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-slate-100 bg-white absolute w-full p-4 shadow-xl flex flex-col gap-2 animate-in slide-in-from-top-2">
+          <div className="md:hidden border-t border-slate-800 bg-slate-950 absolute w-full p-4 shadow-xl flex flex-col gap-2 animate-in slide-in-from-top-2">
             {navItems.map(item => (
               <button
                 key={item.id}
                 onClick={() => navigateTo(item.id)}
-                className="p-3 text-left rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
+                className="p-3 text-left rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 font-medium"
               >
                 {item.label}
               </button>
@@ -1016,33 +1127,37 @@ const App = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-12 px-6 border-t border-slate-800">
+      <footer className="bg-slate-950 border-t border-slate-900 py-12 px-6">
         <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4 text-white">
-              <Brain className="w-6 h-6" />
+              <Brain className="w-6 h-6 text-purple-500" />
               <span className="text-xl font-bold">NeuroHub</span>
             </div>
-            <p className="max-w-xs text-sm leading-relaxed">Democratizing machine learning education through interactive tools, comprehensive theory, and accessible content.</p>
+            <p className="max-w-xs text-sm leading-relaxed text-slate-500">Democratizing machine learning education through interactive tools, comprehensive theory, and accessible content.</p>
           </div>
           <div>
             <h4 className="text-white font-bold mb-4">Learn</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="hover:text-white cursor-pointer transition" onClick={() => navigateTo('roadmap')}>Roadmap</li>
-              <li className="hover:text-white cursor-pointer transition" onClick={() => navigateTo('concepts')}>Concepts Library</li>
-              <li className="hover:text-white cursor-pointer transition" onClick={() => navigateTo('tools')}>Interactive Lab</li>
+            <ul className="space-y-2 text-sm text-slate-400">
+              <li className="hover:text-blue-400 cursor-pointer transition" onClick={() => navigateTo('roadmap')}>Roadmap</li>
+              <li className="hover:text-blue-400 cursor-pointer transition" onClick={() => navigateTo('concepts')}>Concepts Library</li>
+              <li className="hover:text-blue-400 cursor-pointer transition" onClick={() => navigateTo('tools')}>Interactive Lab</li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-bold mb-4">Connect</h4>
-            <div className="flex gap-4">
-              <Github className="w-5 h-5 hover:text-white cursor-pointer transition" />
-              <Twitter className="w-5 h-5 hover:text-white cursor-pointer transition" />
-              <Linkedin className="w-5 h-5 hover:text-white cursor-pointer transition" />
+            <div className="flex flex-col gap-3">
+              <a href="https://github.com/Deepayan-Thakur" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-white transition">
+                <Github className="w-5 h-5" /> <span>@Deepayan-Thakur</span>
+              </a>
+              <div className="flex gap-4">
+                 <Twitter className="w-5 h-5 text-slate-500 hover:text-blue-400 cursor-pointer transition" />
+                 <Linkedin className="w-5 h-5 text-slate-500 hover:text-blue-600 cursor-pointer transition" />
+              </div>
             </div>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto pt-8 border-t border-slate-800 text-center text-sm">
+        <div className="max-w-6xl mx-auto pt-8 border-t border-slate-900 text-center text-sm text-slate-600">
           &copy; 2024 NeuroHub Educational Platform. All rights reserved.
         </div>
       </footer>
