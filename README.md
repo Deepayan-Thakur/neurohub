@@ -1,16 +1,83 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🧠 NeuroHub 2.0
 
-Currently, two official plugins are available:
+An interactive learning platform for **Machine Learning and AI**, designed to take learners from **fundamentals to advanced concepts** through structured roadmaps, hands-on examples, and production-grade code.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Built with modern web tooling for performance, scalability, and developer experience.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+* 📚 **Structured Learning Roadmaps**
+  Step-by-step paths from beginner to expert topics.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* 🧪 **Interactive Concepts**
+  Learn by tweaking parameters and observing results in real time.
+
+* 💻 **Production-Ready Code**
+  Examples in PyTorch, TensorFlow, and Scikit-Learn.
+
+* 🧩 **Layered Explanations**
+  Simple intuition first, deeper math and theory when you need it.
+
+---
+
+## 🛠 Tech Stack
+
+* **React** – component-based UI
+* **Vite** – lightning-fast dev & build tooling
+* **Tailwind CSS** – utility-first styling
+* **ESLint** – consistent, clean code
+
+---
+
+## 🚀 Getting Started
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Start development server
+
+```bash
+npm run dev
+```
+
+### Build for production
+
+```bash
+npm run build
+```
+
+---
+
+## 🌍 Deployment
+
+This project is deployed using **GitHub Pages** (no external hosting).
+
+```bash
+npm run deploy
+```
+
+---
+
+## 📌 Philosophy
+
+NeuroHub aims to **democratize machine learning education** by combining:
+
+* clear explanations
+* interactive learning
+* real-world code
+
+Learning ML shouldn’t feel like decoding ancient scrolls.
+
+---
+
+## 📄 License
+
+MIT License — free to use, modify, and learn from.
+
+---
