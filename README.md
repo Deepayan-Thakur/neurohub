@@ -7,6 +7,7 @@ Built with modern web tooling for performance, scalability, and developer experi
 
 <img width="1905" height="911" alt="image" src="https://github.com/user-attachments/assets/48737772-adbc-49b7-8ee8-a95376c1ed32" />
 
+<img width="1904" height="915" alt="image" src="https://github.com/user-attachments/assets/0c8b864a-b84b-4146-95e3-4c92e81db6b9" />
 
 ---
 
