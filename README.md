@@ -5,6 +5,9 @@ An interactive learning platform for **Machine Learning and AI**, designed to ta
 
 Built with modern web tooling for performance, scalability, and developer experience.
 
+<img width="1905" height="911" alt="image" src="https://github.com/user-attachments/assets/48737772-adbc-49b7-8ee8-a95376c1ed32" />
+
+
 ---
 
 ## ✨ Features
